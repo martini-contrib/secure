@@ -4,7 +4,7 @@
 //
 //  import (
 //    "github.com/codegangsta/martini"
-//    "github.com/codegangsta/martini-contrib/secure"
+//    "github.com/martini-contrib/secure"
 //  )
 //
 //  func main() {
