@@ -1,4 +1,4 @@
-# secure
+# secure [![wercker status](https://app.wercker.com/status/2a150fdb8b40b02c22cd8152eb7984ca "wercker status")](https://app.wercker.com/project/bykey/2a150fdb8b40b02c22cd8152eb7984ca)
 Martini middleware that helps enable some quick security wins.
 
 [API Reference](http://godoc.org/github.com/codegangsta/martini-contrib/secure)
