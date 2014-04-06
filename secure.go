@@ -3,7 +3,7 @@
 //  package main
 //
 //  import (
-//    "github.com/codegangsta/martini"
+//    "github.com/go-martini/martini"
 //    "github.com/martini-contrib/secure"
 //  )
 //
@@ -25,9 +25,10 @@ package secure
 
 import (
 	"fmt"
-	"github.com/codegangsta/martini"
 	"net/http"
 	"strings"
+
+	"github.com/go-martini/martini"
 )
 
 const (
