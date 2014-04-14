@@ -1,11 +1,12 @@
 package secure
 
 import (
-	"github.com/codegangsta/martini"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	"github.com/go-martini/martini"
 )
 
 func Test_No_Config(t *testing.T) {
