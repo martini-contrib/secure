@@ -7,7 +7,7 @@ Martini middleware that helps enable some quick security wins.
 
 ~~~ go
 import (
-  "github.com/codegangsta/martini"
+  "github.com/go-martini/martini"
   "github.com/martini-contrib/secure"
 )
 
