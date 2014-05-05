@@ -106,4 +106,4 @@ add_header Content-Security-Policy "default-src 'self'";
 ~~~
 
 ## Authors
-* [Cory Jacobsen](http://github.com/cojac)
+* [Cory Jacobsen](http://github.com/unrolled)
