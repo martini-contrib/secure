@@ -30,6 +30,7 @@ func Test_No_Config(t *testing.T) {
 
 func Test_No_AllowHosts(t *testing.T) {
 	m := martini.Classic()
+	martini.Env = martini.Prod
 	m.Use(Secure(Options{
 		AllowedHosts: []string{},
 	}))
@@ -50,6 +51,7 @@ func Test_No_AllowHosts(t *testing.T) {
 
 func Test_Good_Single_AllowHosts(t *testing.T) {
 	m := martini.Classic()
+	martini.Env = martini.Prod
 	m.Use(Secure(Options{
 		AllowedHosts: []string{"www.example.com"},
 	}))
@@ -70,6 +72,7 @@ func Test_Good_Single_AllowHosts(t *testing.T) {
 
 func Test_Bad_Single_AllowHosts(t *testing.T) {
 	m := martini.Classic()
+	martini.Env = martini.Prod
 	m.Use(Secure(Options{
 		AllowedHosts: []string{"sub.example.com"},
 	}))
@@ -89,6 +92,7 @@ func Test_Bad_Single_AllowHosts(t *testing.T) {
 
 func Test_Good_Multiple_AllowHosts(t *testing.T) {
 	m := martini.Classic()
+	martini.Env = martini.Prod
 	m.Use(Secure(Options{
 		AllowedHosts: []string{"www.example.com", "sub.example.com"},
 	}))
@@ -109,6 +113,7 @@ func Test_Good_Multiple_AllowHosts(t *testing.T) {
 
 func Test_Bad_Multiple_AllowHosts(t *testing.T) {
 	m := martini.Classic()
+	martini.Env = martini.Prod
 	m.Use(Secure(Options{
 		AllowedHosts: []string{"www.example.com", "sub.example.com"},
 	}))
@@ -124,6 +129,47 @@ func Test_Bad_Multiple_AllowHosts(t *testing.T) {
 	m.ServeHTTP(res, req)
 
 	expect(t, res.Code, http.StatusInternalServerError)
+}
+
+func Test_AllowHosts_Dev_Mode_But_DisableProdCheck(t *testing.T) {
+	m := martini.Classic()
+	martini.Env = martini.Dev
+	m.Use(Secure(Options{
+		AllowedHosts:     []string{"www.example.com", "sub.example.com"},
+		DisableProdCheck: true,
+	}))
+
+	m.Get("/foo", func() string {
+		return "bar"
+	})
+
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/foo", nil)
+	req.Host = "www3.example.com"
+
+	m.ServeHTTP(res, req)
+
+	expect(t, res.Code, http.StatusInternalServerError)
+}
+
+func Test_AllowHosts_Dev_Mode(t *testing.T) {
+	m := martini.Classic()
+	martini.Env = martini.Dev
+	m.Use(Secure(Options{
+		AllowedHosts: []string{"www.example.com", "sub.example.com"},
+	}))
+
+	m.Get("/foo", func() string {
+		return "bar"
+	})
+
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/foo", nil)
+	req.Host = "www3.example.com"
+
+	m.ServeHTTP(res, req)
+
+	expect(t, res.Code, http.StatusOK)
 }
 
 func Test_SSL(t *testing.T) {

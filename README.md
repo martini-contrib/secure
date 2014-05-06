@@ -46,12 +46,13 @@ Content-Security-Policy: default-src 'self'
 ```
 
 ###Set the `MARTINI_ENV` environment variable to `production` when deploying!
-If you don't, the SSLRedirect and STS Header will not work. This allows you to work in development/test mode and not have any annoying redirects to HTTPS (ie. development can happen on http). If this is not the behavior you're expecting, see the `DisableProdCheck` below in the options.
+If you don't, the AllowedHosts, SSLRedirect, and STS Header will not be in effect. This allows you to work in development/test mode and not have any annoying redirects to HTTPS (ie. development can happen on http), or block `localhost` has a bad host. If this is not the behavior you're expecting, see the `DisableProdCheck` below in the options.
 
 You can also disable the production check for testing like so:
 ```go
 //...
 m.Use(secure.Secure(secure.Options{
+    AllowedHosts: []string{"example.com", "ssl.example.com"},
     SSLRedirect: true,
     STSSeconds: 315360000,
     DisableProdCheck: martini.Env == martini.Test,
@@ -77,7 +78,7 @@ m.Use(secure.Secure(secure.Secure{
   ContentTypeNosniff: true, // If ContentTypeNosniff is true, adds the X-Content-Type-Options header with the value `nosniff`. Default is false.
   BrowserXssFilter: true, // If BrowserXssFilter is true, adds the X-XSS-Protection header with the value `1; mode=block`. Default is false.
   ContentSecurityPolicy: "default-src 'self'", // ContentSecurityPolicy allows the Content-Security-Policy header value to be set with a custom value. Default is "".
-  DisableProdCheck: true, // This will ignore our production check, and will follow the SSLRedirect and STSSeconds/STSIncludeSubdomains options... even in development! This would likely only be used to mimic a production environment on your local development machine.
+  DisableProdCheck: true, // This will ignore our production check, and will follow the AllowedHosts, SSLRedirect, and STSSeconds/STSIncludeSubdomains options... even in development! This would likely only be used to mimic a production environment on your local development machine.
 }))
 // ...
 ```
