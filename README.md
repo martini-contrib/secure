@@ -5,7 +5,7 @@ Martini middleware that helps enable some quick security wins.
 
 ## Usage
 
-~~~ go
+```go
 import (
   "github.com/go-martini/martini"
   "github.com/martini-contrib/secure"
@@ -31,25 +31,25 @@ func main() {
   m.Run()
 }
 
-~~~
+```
 
 Make sure to include the secure middleware as close to the top as possible. It's best to do the allowed hosts and SSL check before anything else.
 
 The above example will only allow requests with a host name of 'example.com', or 'ssl.example.com'. Also if the request is not https, it will be redirected to https with the host name of 'ssl.example.com'.
 After this it will add the following headers:
-~~~
+```
 Strict-Transport-Security: 315360000; includeSubdomains
 X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Content-Security-Policy: default-src 'self'
-~~~
+```
 
 ###Set the `MARTINI_ENV` environment variable to `production` when deploying!
 If you don't, the SSLRedirect and STS Header will not work. This allows you to work in development/test mode and not have any annoying redirects to HTTPS (ie. development can happen on http). If this is not the behavior you're expecting, see the `DisableProdCheck` below in the options.
 
 You can also disable the production check for testing like so:
-~~~ go
+```go
 //...
 m.Use(secure.Secure(secure.Options{
     SSLRedirect: true,
@@ -57,13 +57,13 @@ m.Use(secure.Secure(secure.Options{
     DisableProdCheck: martini.Env == martini.Test,
   }))
 //...
-~~~
+```
 
 
 ### Options
 `secure.Secure` comes with a variety of configuration options:
 
-~~~ go
+```go
 // ...
 m.Use(secure.Secure(secure.Secure{
   AllowedHosts: []string{"ssl.example.com"}, // AllowedHosts is a list of fully qualified domain names that are allowed. Default is empty list, which allows any and all host names.
@@ -80,11 +80,62 @@ m.Use(secure.Secure(secure.Secure{
   DisableProdCheck: true, // This will ignore our production check, and will follow the SSLRedirect and STSSeconds/STSIncludeSubdomains options... even in development! This would likely only be used to mimic a production environment on your local development machine.
 }))
 // ...
-~~~
+```
+
+### Redirecting HTTP to HTTPS
+If you want to redirect all http requests to https, you can use the following example. Note that the `martini.Env` needs to be in production, otherwise the redirect will not happen (see the `MARTINI_ENV` section above for other ways around this).
+
+```go
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/go-martini/martini"
+	"github.com/martini-contrib/secure"
+)
+
+func main() {
+	martini.Env = martini.Prod
+
+	m := martini.New()
+	m.Use(martini.Logger())
+	m.Use(martini.Recovery())
+	m.Use(martini.Static("public"))
+
+	r := martini.NewRouter()
+	m.MapTo(r, (*martini.Routes)(nil))
+	m.Action(r.Handle)
+
+	r.Get("/", func() string {
+		return "Hello world!"
+	})
+
+	m.Use(secure.Secure(secure.Options{
+    SSLRedirect:  true,
+    SSLHost:      "localhost:8443",  // This is optional in production. The default behavior is to just redirect the request to the https protocol. Example: http://github.com/some_page would be redirected to https://github.com/some_page.
+	}))
+
+	// HTTP
+	go func() {
+		if err := http.ListenAndServe(":8080", m); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// HTTPS
+	// To generate a development cert and key, run the following from your *nix terminal:
+	// go run $GOROOT/src/pkg/crypto/tls/generate_cert.go --host="localhost"
+	if err := http.ListenAndServeTLS(":8443", "cert.pem", "key.pem", m); err != nil {
+		log.Fatal(err)
+	}
+}
+```
 
 ### Nginx
 If you would like to add the above security rules directly to your nginx configuration, everything is below:
-~~~
+```
 # Allowed Hosts:
 if ($host !~* ^(example.com|ssl.example.com)$ ) {
     return 500;
@@ -103,7 +154,7 @@ add_header X-Frame-Options "DENY";
 add_header X-Content-Type-Options "nosniff";
 add_header X-XSS-Protection "1; mode=block";
 add_header Content-Security-Policy "default-src 'self'";
-~~~
+```
 
 ## Authors
 * [Cory Jacobsen](http://github.com/unrolled)
