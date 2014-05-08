@@ -66,7 +66,7 @@ m.Use(secure.Secure(secure.Options{
 
 ```go
 // ...
-m.Use(secure.Secure(secure.Secure{
+m.Use(secure.Secure(secure.Options{
   AllowedHosts: []string{"ssl.example.com"}, // AllowedHosts is a list of fully qualified domain names that are allowed. Default is empty list, which allows any and all host names.
   SSLRedirect: true, // If SSLRedirect is set to true, then only allow https requests. Default is false.
   SSLHost: "ssl.example.com", // SSLHost is the host name that is used to redirect http requests to https. Default is "", which indicates to use the same host.
