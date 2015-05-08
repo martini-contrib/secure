@@ -104,8 +104,8 @@ func main() {
 	m.Use(martini.Logger())
 	m.Use(martini.Recovery())
 	m.Use(secure.Secure(secure.Options{
-    SSLRedirect:  true,
-    SSLHost:      "localhost:8443",  // This is optional in production. The default behavior is to just redirect the request to the https protocol. Example: http://github.com/some_page would be redirected to https://github.com/some_page.
+		SSLRedirect:  true,
+		SSLHost:      "localhost:8443",  // This is optional in production. The default behavior is to just redirect the request to the https protocol. Example: http://github.com/some_page would be redirected to https://github.com/some_page.
 	}))
 	m.Use(martini.Static("public"))
 
